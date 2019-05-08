@@ -16,6 +16,7 @@ dependencies {
     implementation 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
     implementation 'net.java.dev.jna:jna-platform:5.3.1'
     implementation 'com.github.jnr:jnr-ffi:2.1.9'
+    implementation 'com.nativelibs4java:bridj:0.7.0'
 }
 
 jmh {
