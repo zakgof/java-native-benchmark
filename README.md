@@ -47,11 +47,19 @@ I noticed that the `straightforward` calling of the wrapped API involved scannin
 **Pure Java**
 For comparison, the same problem was implemented with JDK's `java.util.Date`, `java.util.Calendar` and `java.time.LocalDateTime`
 
+## How to run ##
+
+Make sure that gradle is configured with a JDK including Panama implementation, such as https://download.java.net/java/early_access/panama/70/openjdk-13-foreign+70_windows-x64_bin.zip
+````
+    gradlew clean jmh
+````
+
+## Results ##
+
 **System**:  
 
 Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-13-panama-f70
 
-## Results ###
 ```
 Full benchmark
 
@@ -70,9 +78,9 @@ JmhGetSystemTimeSeconds.java_date             62.758 ±    2.037  ns/op
 JNA looks expectedly slow (x5 slower that JNI).   
 It may look strange that Bridj built on top of JNI slightly outperforms JNI, but remember that the benchmark involves not only calling a native method but also allocating a struct and extracting the result from a field, we'll see the native-call-only results below.
 
-JNI tests show similar results (within error range) with custom and stock wrapper. It is still much slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8's `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
+JNI tests show similar results (within error range) with custom and stock wrapper. JNI is still much slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8's `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
 
-I was surprised by the slowliness of Panama. Even with optimized layout scanning Panama is much slower that JNI.
+I was surprised by the slowliness of Panama. Even with optimized layout scanning Panama is much slower than JNI.
 
 Now let's look into performance of the native call only, stripping out the struct allocation and field access:
 
