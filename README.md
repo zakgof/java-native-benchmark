@@ -63,16 +63,16 @@ Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-13-panama-f70
 ```
 Full benchmark
 
-JmhGetSystemTimeSeconds.panama              7993.787 Â± 3161.884  ns/op
-JmhGetSystemTimeSeconds.jna                 3917.292 Â±  874.940  ns/op
-JmhGetSystemTimeSeconds.panama_prelayout    1244.939 Â±   53.293  ns/op
-JmhGetSystemTimeSeconds.jni                  781.525 Â±   97.425  ns/op
-JmhGetSystemTimeSeconds.jni_minimal          770.816 Â±   51.910  ns/op
-JmhGetSystemTimeSeconds.bridj                745.879 Â±   87.116  ns/op
-JmhGetSystemTimeSeconds.jnr                  418.712 Â±   33.270  ns/op
-JmhGetSystemTimeSeconds.java_calendar        186.321 Â±    6.481  ns/op
-JmhGetSystemTimeSeconds.java_localdatetime    77.483 Â±    5.103  ns/op
-JmhGetSystemTimeSeconds.java_date             62.758 Â±    2.037  ns/op
+JmhGetSystemTimeSeconds.panama              4660.794 ±  86.164  ns/op
+JmhGetSystemTimeSeconds.jna                 2961.830 ±  48.592  ns/op
+JmhGetSystemTimeSeconds.panama_prelayout    1142.992 ±   6.710  ns/op
+JmhGetSystemTimeSeconds.jni_jcpp_custom     1087.568 ± 130.339  ns/op
+JmhGetSystemTimeSeconds.jni_jcpp_stock      1060.231 ± 118.715  ns/op
+JmhGetSystemTimeSeconds.bridj                982.768 ± 111.700  ns/op
+JmhGetSystemTimeSeconds.jnr                  378.111 ±   1.414  ns/op
+JmhGetSystemTimeSeconds.java_calendar        166.788 ±   0.538  ns/op
+JmhGetSystemTimeSeconds.java_localdatetime    71.371 ±   0.292  ns/op
+JmhGetSystemTimeSeconds.java_date             58.223 ±   0.539  ns/op
 ```
 
 JNA looks expectedly slow (x5 slower that JNI).   
@@ -87,12 +87,12 @@ Now let's look into performance of the native call only, stripping out the struc
 ````
 Native call only
 
-JmhCallOnly.jna                             1183.508 Â±   21.163  ns/op
-JmhCallOnly.panama                           616.936 Â±    6.047  ns/op
-JmhCallOnly.bridj                            300.386 Â±    3.019  ns/op
-JmhCallOnly.jnr                              273.134 Â±    3.303  ns/op
-JmhCallOnly.jni_jcpp_custom                   72.369 Â±    0.574  ns/op
-JmhCallOnly.jni_jcpp_stock                    73.818 Â±    0.552  ns/op
+JmhCallOnly.jna                             1124.884 ±   6.295  ns/op
+JmhCallOnly.panama                           595.649 ±   2.994  ns/op
+JmhCallOnly.bridj                            300.386 ±   3.019  ns/op
+JmhCallOnly.jnr                              260.815 ±   0.672  ns/op
+JmhCallOnly.jni_jcpp_stock                    71.926 ±   0.242  ns/op
+JmhCallOnly.jni_jcpp_custom                   70.880 ±   0.475  ns/op
 ````
 
 Here JNI significanlty outperforms all the competitors with custom wrapper a bit faster than the JavaCpp-prebaked windows API.
