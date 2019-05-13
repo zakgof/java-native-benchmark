@@ -21,4 +21,5 @@ dependencies {
 
 jmh {
     duplicateClassesStrategy = 'warn'
+    jvmArgs = ['-Djmh.separateClasspathJAR=true']
 }

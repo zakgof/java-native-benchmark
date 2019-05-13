@@ -29,7 +29,7 @@ In a separate benchmark I measured performance of the native call only  (item 2)
 
 **JNI**     
 JNI is a Java's standard way to call native code present in JDK since its early versions. JNI requires building a native stub as an adapter between Java and native library, so is considered low-level. Helper tools have been developed in order to automate and simplify native stub generation. Here I used [JavaCpp](https://github.com/bytedeco/javacpp), the project is known for prebaking Java wrappers around high-performant C/C++ libraries such as OpenCV and ffmpeg.
-JavaCpp comes with ready-to-use wrappers for widely used system libraries, including Windows API lib. In this benchmark I used both prebaked Windows API (jni_jcpp_stock) as well as the customly generated wrapper lib for the single `GetSystemTime` method (jni_jcpp_custom).
+JavaCpp comes with ready-to-use wrappers for widely used system libraries, including Windows API lib, so I used them in this benchmark.
 
 **JNA**     
 JNA resolves the burden of writing native wrapper by using a native stub that calls the target function dynamically. It only requires writing Java code and provides mapping to C structs and unions, however, for complex libraries writing Java API that matched a native lib's C API still might be a big task. JNA also provides prebaked Java classes for Windows API. Wrapping the calls dynamically results in high performance overhead comparing to JNI.
@@ -38,7 +38,7 @@ JNA resolves the burden of writing native wrapper by using a native stub that ca
 Bridj is an attempt to provide a Java to Cpp interop solution similar to JNA (without a need of writing and compiling native code), it claims to provide better performance using dyncall and hand-optimized assembly tweaks. A tool named JNAerator helps to generate java classed from the native library headers. The Bridj projects seems to be abandoned now.
 
 **JNR**     
-JNR is a comparingly young project that resolves the same problems, same as JNA or Bridj it does not require native programming. There's not much documentation or reviews at the moment, but JNR is often called promising.
+JNR is a comparingly young project that target the same problem. Similarly as JNA or Bridj it does not require native programming. There's not much documentation or reviews at the moment, but JNR is often called promising.
 
 **Project Panama**     
 Project Panama aims to simplify the existing complexity with Java to C interop on JDK level. It is still under development, but already available is some jdk 13 early access builds. Panama developers claim to provide high performance and ease of use.
@@ -63,44 +63,41 @@ Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-13-panama-f70
 ```
 Full benchmark
 
-JmhGetSystemTimeSeconds.panama              4660.794 ±  86.164  ns/op
-JmhGetSystemTimeSeconds.jna                 2961.830 ±  48.592  ns/op
-JmhGetSystemTimeSeconds.panama_prelayout    1142.992 ±   6.710  ns/op
-JmhGetSystemTimeSeconds.jni_jcpp_custom     1087.568 ± 130.339  ns/op
-JmhGetSystemTimeSeconds.jni_jcpp_stock      1060.231 ± 118.715  ns/op
-JmhGetSystemTimeSeconds.bridj                982.768 ± 111.700  ns/op
-JmhGetSystemTimeSeconds.jnr                  378.111 ±   1.414  ns/op
-JmhGetSystemTimeSeconds.java_calendar        166.788 ±   0.538  ns/op
-JmhGetSystemTimeSeconds.java_localdatetime    71.371 ±   0.292  ns/op
-JmhGetSystemTimeSeconds.java_date             58.223 ±   0.539  ns/op
+JmhGetSystemTimeSeconds.panama              3688.485 ±  75.169  ns/op
+JmhGetSystemTimeSeconds.jna                 2723.679 ± 399.708  ns/op
+JmhGetSystemTimeSeconds.panama_prelayout     875.691 ±  20.309  ns/op
+JmhGetSystemTimeSeconds.bridj                756.305 ±  81.670  ns/op
+JmhGetSystemTimeSeconds.jnr                  309.383 ±   6.621  ns/op
+JmhGetSystemTimeSeconds.jni_javacpp          227.560 ±   3.355  ns/op
+JmhGetSystemTimeSeconds.java_calendar        136.523 ±   0.947  ns/op
+JmhGetSystemTimeSeconds.java_localdatetime    59.366 ±   0.461  ns/op
+JmhGetSystemTimeSeconds.java_date             45.889 ±   0.396  ns/op
 ```
 
-JNA looks expectedly slow (x5 slower that JNI).   
-It may look strange that Bridj built on top of JNI slightly outperforms JNI, but remember that the benchmark involves not only calling a native method but also allocating a struct and extracting the result from a field, we'll see the native-call-only results below.
+JNA looks expectedly slow (x5 slower that JNI).
 
-JNI tests show similar results (within error range) with custom and stock wrapper. JNI is still much slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8's `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
+I was surprised by the slowliness of Panama. Even with optimized layout scanning Panama is 4 times slower than JNI, beating only JNA.       
 
-I was surprised by the slowliness of Panama. Even with optimized layout scanning Panama is much slower than JNI.
+Trending JNR appears faster than outdated Bridj, yet staying behind JNI.
+
+JNI itself is still ~4 times slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8's `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
+
+
 
 Now let's look into performance of the native call only, stripping out the struct allocation and field access:
 
 ````
 Native call only
 
-JmhCallOnly.jna                             1124.884 ±   6.295  ns/op
-JmhCallOnly.panama                           595.649 ±   2.994  ns/op
-JmhCallOnly.bridj                            300.386 ±   3.019  ns/op
-JmhCallOnly.jnr                              260.815 ±   0.672  ns/op
-JmhCallOnly.jni_jcpp_stock                    71.926 ±   0.242  ns/op
-JmhCallOnly.jni_jcpp_custom                   70.880 ±   0.475  ns/op
+JmhCallOnly.jna                              885.746 ±   8.698  ns/op
+JmhCallOnly.panama                           469.585 ±   4.441  ns/op
+JmhCallOnly.bridj                            231.785 ±   2.663  ns/op
+JmhCallOnly.jnr                              214.501 ±  11.218  ns/op
+JmhCallOnly.jni_javacpp                       56.872 ±   0.845  ns/op
 ````
 
-Here JNI significanlty outperforms all the competitors with custom wrapper a bit faster than the JavaCpp-prebaked windows API.
-
-Trending JNR appears faster than outdated Bridj, with Panama trailing behind and JNA being the slowest.
-
-Poor results of JNI full operation benchmark can be explained by the slowliness of struct allocation or the files access (which is actually JavaCpp's area of responsibility). I am wondering if it's possible to use Bridj's approach for fast allocation with pure JNI...
+The order of the same, leaving JNI the best with JNR as a leader among native-code-development-free solutions.
 
 ## Conclusion ##
 
-In 2019, getting the ultimate performance from Java to C++ interop still requires JNI with its low-level routine work. For a more developer-friendly solution JNR should be recommended. I hope that Panama should be able to gain some speed before its release, for now its performance is disappointing.
+In 2019, getting the ultimate performance from Java to C++ interop still requires JNI with its low-level routine work. For a more developer-friendly solution JNR should be recommended. I still hope that Panama is able to gain some speed before its release, but for now its performance is disappointing.

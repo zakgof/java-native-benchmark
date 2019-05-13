@@ -15,19 +15,17 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
 import com.zakgof.jnbenchmark.jna.JnaBenchmark;
-import com.zakgof.jnbenchmark.jni.JavaCppCustom;
 import com.zakgof.jnbenchmark.jni.JavaCppStock;
 import com.zakgof.jnbenchmark.jnr.JnrBenchmark;
 import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
 
 @BenchmarkMode(Mode.AverageTime)
-@Warmup(iterations = 10, time = 500, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 20, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 10, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 @State(Scope.Thread)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class JmhCallOnly {
 
-	private JavaCppCustom minJni;
 	private PanamaBenchmark panama;
 	private JavaCppStock javacppjni;
 	private BridjBenchmark bridj;
@@ -36,7 +34,6 @@ public class JmhCallOnly {
 
 	@Setup(Level.Trial)
 	public void setup() {
-		minJni = new JavaCppCustom();
 		panama = new PanamaBenchmark();
 		javacppjni = new JavaCppStock();
 		bridj = new BridjBenchmark();
@@ -45,12 +42,7 @@ public class JmhCallOnly {
 	}
 
 	@Benchmark
-	public void jni_jcpp_custom() throws InterruptedException {
-		minJni.callOnly();
-	}
-
-	@Benchmark
-	public void jni_jcpp_stock() throws InterruptedException {
+	public void jni_javacpp() throws InterruptedException {
 		javacppjni.callOnly();
 	}
 

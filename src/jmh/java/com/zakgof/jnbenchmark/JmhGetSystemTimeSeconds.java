@@ -16,14 +16,13 @@ import org.openjdk.jmh.annotations.Warmup;
 import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
 import com.zakgof.jnbenchmark.java.JustJava;
 import com.zakgof.jnbenchmark.jna.JnaBenchmark;
-import com.zakgof.jnbenchmark.jni.JavaCppCustom;
 import com.zakgof.jnbenchmark.jni.JavaCppStock;
 import com.zakgof.jnbenchmark.jnr.JnrBenchmark;
 import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
 
 @BenchmarkMode(Mode.AverageTime)
-@Warmup(iterations = 10, time = 500, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 20, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 10, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 @State(Scope.Thread)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class JmhGetSystemTimeSeconds {
@@ -51,13 +50,8 @@ public class JmhGetSystemTimeSeconds {
 	}
 
 	@Benchmark
-	public void jni_jcpp_stock() throws InterruptedException {
+	public void jni_javacpp() throws InterruptedException {
 		JavaCppStock.all();
-	}
-	
-	@Benchmark
-	public void jni_jcpp_custom() throws InterruptedException {
-		JavaCppCustom.all();
 	}
 
 	@Benchmark
