@@ -51,12 +51,12 @@ public class JmhGetSystemTimeSeconds {
 	}
 
 	@Benchmark
-	public void jni() throws InterruptedException {
+	public void jni_jcpp_stock() throws InterruptedException {
 		JavaCppStock.all();
 	}
 	
 	@Benchmark
-	public void jni_minimal() throws InterruptedException {
+	public void jni_jcpp_custom() throws InterruptedException {
 		JavaCppCustom.all();
 	}
 
