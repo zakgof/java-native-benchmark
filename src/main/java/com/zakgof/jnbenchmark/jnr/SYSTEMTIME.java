@@ -2,12 +2,12 @@ package com.zakgof.jnbenchmark.jnr;
 
 import jnr.ffi.Runtime;
 import jnr.ffi.Struct;
-import jnr.ffi.Struct.WORD;
 
 public class SYSTEMTIME extends Struct {
 	protected SYSTEMTIME(Runtime runtime) {
 		super(runtime);
 	}
+
 	public final WORD wYear = new WORD();
 	public final WORD wMonth = new WORD();
 	public final WORD wDayOfWeek = new WORD();

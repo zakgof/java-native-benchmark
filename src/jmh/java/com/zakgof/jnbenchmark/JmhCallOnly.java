@@ -14,7 +14,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
-import com.zakgof.jnbenchmark.java.JustJava;
 import com.zakgof.jnbenchmark.jna.JnaBenchmark;
 import com.zakgof.jnbenchmark.jni.JavaCppCustom;
 import com.zakgof.jnbenchmark.jni.JavaCppStock;
@@ -26,63 +25,53 @@ import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
 @Measurement(iterations = 20, time = 2000, timeUnit = TimeUnit.MILLISECONDS)
 @State(Scope.Thread)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class JmhGetSystemTimeSeconds {
-	
+public class JmhCallOnly {
+
+	private JavaCppCustom minJni;
 	private PanamaBenchmark panama;
+	private JavaCppStock javacppjni;
+	private BridjBenchmark bridj;
+	private JnaBenchmark jna;
+	private JnrBenchmark jnr;
 
 	@Setup(Level.Trial)
-    public void setup() {
+	public void setup() {
+		minJni = new JavaCppCustom();
 		panama = new PanamaBenchmark();
-    }
-
-	@Benchmark
-	public void java_localdatetime() throws InterruptedException {
-		JustJava.java_ldt();
+		javacppjni = new JavaCppStock();
+		bridj = new BridjBenchmark();
+		jna = new JnaBenchmark();
+		jnr = new JnrBenchmark();
 	}
 
 	@Benchmark
-	public void java_calendar() throws InterruptedException {
-		JustJava.java_calendar();
-	}
-	
-	@Benchmark
-	public void java_date() throws InterruptedException {
-		JustJava.java_date();
+	public void jni_jcpp_custom() throws InterruptedException {
+		minJni.callOnly();
 	}
 
 	@Benchmark
-	public void jni() throws InterruptedException {
-		JavaCppStock.all();
-	}
-	
-	@Benchmark
-	public void jni_minimal() throws InterruptedException {
-		JavaCppCustom.all();
+	public void jni_jcpp_stock() throws InterruptedException {
+		javacppjni.callOnly();
 	}
 
 	@Benchmark
-	public void jna() throws InterruptedException {
-		JnaBenchmark.all();
-	}
-
-	@Benchmark
-	public void jnr() throws InterruptedException {
-		JnrBenchmark.all();
+	public void panama() throws InterruptedException {
+		panama.callOnly();
 	}
 
 	@Benchmark
 	public void bridj() throws InterruptedException {
-		BridjBenchmark.all();
+		bridj.callOnly();
 	}
-	
+
 	@Benchmark
-	public void panama_prelayout() throws InterruptedException {
-		panama.allWithPreLayout();
+	public void jna() throws InterruptedException {
+		jna.callOnly();
 	}
-	
+
 	@Benchmark
-	public void panama() throws InterruptedException {
-		panama.all();
+	public void jnr() throws InterruptedException {
+		jnr.callOnly();
 	}
 
 }
