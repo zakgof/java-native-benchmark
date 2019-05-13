@@ -1,8 +1,8 @@
 # java-native-benchmark
 JMH performance benchmark for Java's native call APIs: [JNI](https://docs.oracle.com/en/java/javase/12/docs/specs/jni/index.html) (via [JavaCpp](https://github.com/bytedeco/javacpp) ), [JNA](https://github.com/java-native-access/jna), [JNR](https://github.com/jnr/jnr-ffi), [Bridj](https://github.com/nativelibs4java/BridJ) and [Project Panama](http://openjdk.java.net/projects/panama/) (jdk13 ea)
 
-**Operation:** 
-Get seconds from the current system time using native call to Windows API function `GetSystemTime` provided by kernel32.dll.
+## Benchmark operation ##
+Get seconds from the current system time using native call to Windows API function `GetSystemTime` provided by kernel32.dll:
 
 ````cpp
 void GetSystemTime(LPSYSTEMTIME lpSystemTime);
@@ -68,7 +68,7 @@ JmhGetSystemTimeSeconds.java_date             62.758 ±    2.037  ns/op
 ```
 
 JNA looks expectedly slow (x5 slower that JNI).   
-It may look strange that Bridj build on top of JNI could outperform JNI, but remember that the benchmark involves not only calling a native method but also allocating a struct and extracting the result from a field, we'll see the native-call-only results below.
+It may look strange that Bridj built on top of JNI slightly outperforms JNI, but remember that the benchmark involves not only calling a native method but also allocating a struct and extracting the result from a field, we'll see the native-call-only results below.
 
 JNI tests show similar results (within error range) with custom and stock wrapper. It is still much slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8's `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
 
@@ -93,6 +93,6 @@ Trending JNR appears faster than outdated Bridj, with Panama trailing behind and
 
 Poor results of JNI full operation benchmark can be explained by the slowliness of struct allocation or the files access (which is actually JavaCpp's area of responsibility). I am wondering if it's possible to use Bridj's approach for fast allocation with pure JNI...
 
-#Conclusion
+## Conclusion ##
 
 In 2019, getting the ultimate performance from Java to C++ interop still requires JNI with its low-level routine work. For a more developer-friendly solution JNR should be recommended. I hope that Panama should be able to gain some speed before its release, for now its performance is disappointing.
