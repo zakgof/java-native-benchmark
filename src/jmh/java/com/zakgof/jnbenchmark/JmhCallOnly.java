@@ -15,6 +15,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
 import com.zakgof.jnbenchmark.jna.JnaBenchmark;
+import com.zakgof.jnbenchmark.jna.JnaDirectBenchmark;
 import com.zakgof.jnbenchmark.jni.JavaCppStock;
 import com.zakgof.jnbenchmark.jnr.JnrBenchmark;
 import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
@@ -30,6 +31,7 @@ public class JmhCallOnly {
 	private JavaCppStock javacppjni;
 	private BridjBenchmark bridj;
 	private JnaBenchmark jna;
+	private JnaDirectBenchmark jnaDirect;
 	private JnrBenchmark jnr;
 
 	@Setup(Level.Trial)
@@ -38,6 +40,7 @@ public class JmhCallOnly {
 		javacppjni = new JavaCppStock();
 		bridj = new BridjBenchmark();
 		jna = new JnaBenchmark();
+		jnaDirect = new JnaDirectBenchmark();
 		jnr = new JnrBenchmark();
 	}
 
@@ -59,6 +62,11 @@ public class JmhCallOnly {
 	@Benchmark
 	public void jna() throws InterruptedException {
 		jna.callOnly();
+	}
+	
+	@Benchmark
+	public void jna_direct() throws InterruptedException {
+		jnaDirect.callOnly();
 	}
 
 	@Benchmark

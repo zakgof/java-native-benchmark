@@ -34,6 +34,9 @@ JavaCpp comes with ready-to-use wrappers for widely used system libraries, inclu
 **JNA**     
 JNA resolves the burden of writing native wrapper by using a native stub that calls the target function dynamically. It only requires writing Java code and provides mapping to C structs and unions, however, for complex libraries writing Java API that matched a native lib's C API still might be a big task. JNA also provides prebaked Java classes for Windows API. Wrapping the calls dynamically results in high performance overhead comparing to JNI.
 
+**JNA Direct**
+JNA's direct mode claims to "improve performance substantially, approaching that of custom JNI". The should be well seen then calls are using mostly primitive types for arguments and return values.   
+
 **BriJ**     
 Bridj is an attempt to provide a Java to Cpp interop solution similar to JNA (without a need of writing and compiling native code), it claims to provide better performance using dyncall and hand-optimized assembly tweaks. A tool named JNAerator helps to generate java classed from the native library headers. The Bridj projects seems to be abandoned now.
 
@@ -64,6 +67,7 @@ Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-13-panama-f70
 Full benchmark
 
 JmhGetSystemTimeSeconds.panama              3688.485 ±  75.169  ns/op
+JmhGetSystemTimeSeconds.jnaDirect           2778.373 ± 287.277  ns/op
 JmhGetSystemTimeSeconds.jna                 2723.679 ± 399.708  ns/op
 JmhGetSystemTimeSeconds.panama_prelayout     875.691 ±  20.309  ns/op
 JmhGetSystemTimeSeconds.bridj                756.305 ±  81.670  ns/op
@@ -89,6 +93,7 @@ Now let's look into performance of the native call only, stripping out the struc
 ````
 Native call only
 
+JmhCallOnly.jna_direct                       898.687 ±   7.515  ns/op
 JmhCallOnly.jna                              885.746 ±   8.698  ns/op
 JmhCallOnly.panama                           469.585 ±   4.441  ns/op
 JmhCallOnly.bridj                            231.785 ±   2.663  ns/op

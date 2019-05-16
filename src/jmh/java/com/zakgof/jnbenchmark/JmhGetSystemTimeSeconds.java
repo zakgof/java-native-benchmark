@@ -16,6 +16,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
 import com.zakgof.jnbenchmark.java.JustJava;
 import com.zakgof.jnbenchmark.jna.JnaBenchmark;
+import com.zakgof.jnbenchmark.jna.JnaDirectBenchmark;
 import com.zakgof.jnbenchmark.jni.JavaCppStock;
 import com.zakgof.jnbenchmark.jnr.JnrBenchmark;
 import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
@@ -57,6 +58,11 @@ public class JmhGetSystemTimeSeconds {
 	@Benchmark
 	public void jna() throws InterruptedException {
 		JnaBenchmark.all();
+	}
+	
+	@Benchmark
+	public void jnaDirect() throws InterruptedException {
+		JnaDirectBenchmark.all();
 	}
 
 	@Benchmark
