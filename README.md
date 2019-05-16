@@ -78,7 +78,7 @@ JmhGetSystemTimeSeconds.java_localdatetime    59.366 ±   0.461  ns/op
 JmhGetSystemTimeSeconds.java_date             45.889 ±   0.396  ns/op
 ```
 
-JNA looks expectedly slow (x5 slower that JNI).
+JNA looks expectedly slow (x5 slower that JNI). JNA direct appears even slower, as probably mapping the struct from C to Java consumes the most of operation's time.
 
 I was surprised by the slowliness of Panama. Even with optimized layout scanning Panama is 4 times slower than JNI, beating only JNA.       
 
