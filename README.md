@@ -34,8 +34,8 @@ JavaCpp comes with ready-to-use wrappers for widely used system libraries, inclu
 **JNA**     
 JNA resolves the burden of writing native wrapper by using a native stub that calls the target function dynamically. It only requires writing Java code and provides mapping to C structs and unions, however, for complex libraries writing Java API that matched a native lib's C API still might be a big task. JNA also provides prebaked Java classes for Windows API. Wrapping the calls dynamically results in high performance overhead comparing to JNI.
 
-**JNA Direct**
-JNA's direct mode claims to "improve performance substantially, approaching that of custom JNI". The should be well seen then calls are using mostly primitive types for arguments and return values.   
+**JNA Direct**    
+JNA's direct mode claims to "improve performance substantially, approaching that of custom JNI". That should be well seen then calls are using mostly primitive types for arguments and return values.   
 
 **BriJ**     
 Bridj is an attempt to provide a Java to Cpp interop solution similar to JNA (without a need of writing and compiling native code), it claims to provide better performance using dyncall and hand-optimized assembly tweaks. A tool named JNAerator helps to generate java classed from the native library headers. The Bridj projects seems to be abandoned now.
@@ -47,7 +47,7 @@ JNR is a comparingly young project that target the same problem. Similarly as JN
 Project Panama aims to simplify the existing complexity with Java to C interop on JDK level. It is still under development, but already available is some jdk 13 early access builds. Panama developers claim to provide high performance and ease of use.
 I noticed that the `straightforward` calling of the wrapped API involved scanning the struct layout on each step. An optimized code was writted to calculate layout once and reuse it in subsequents calls (panama_prelayout)
 
-**Pure Java**
+**Pure Java**    
 For comparison, the same problem was implemented with JDK's `java.util.Date`, `java.util.Calendar` and `java.time.LocalDateTime`
 
 ## How to run ##
