@@ -62,8 +62,7 @@ gradlew clean jmh
 
 **System**:  
 
-Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-14-panama+1-15
-
+Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-16
 ```
 Full benchmark (average time, smaller is better)
 
