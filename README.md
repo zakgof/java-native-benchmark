@@ -1,7 +1,9 @@
 # java-native-benchmark
-JMH performance benchmark for Java's native call APIs: [JNI](https://docs.oracle.com/en/java/javase/12/docs/specs/jni/index.html) (via [JavaCpp](https://github.com/bytedeco/javacpp) ), [JNA](https://github.com/java-native-access/jna), [JNR](https://github.com/jnr/jnr-ffi), [Bridj](https://github.com/nativelibs4java/BridJ) and [Project Panama](http://openjdk.java.net/projects/panama/) Foreign Memory Access and Foreign Linker APIs.
+JMH performance benchmark for Java's native call APIs: [JNI](https://docs.oracle.com/en/java/javase/12/docs/specs/jni/index.html) (via [JavaCpp](https://github.com/bytedeco/javacpp) ), [JNA](https://github.com/java-native-access/jna), [JNR](https://github.com/jnr/jnr-ffi), [Bridj](https://github.com/nativelibs4java/BridJ) and [JDK JEP-424](https://openjdk.org/jeps/424) Foreign Function/Memory APIs (Preview).
 
-Updated April 9, 2021
+Updated **August 9, 2023**
+
+See historical results here: [August 2019](https://github.com/zakgof/java-native-benchmark/tree/August-2019#readme)
 
 ## Benchmark operation ##
 Get seconds from the current system time using native call to Windows API function `GetSystemTime` provided by kernel32.dll:
@@ -45,15 +47,15 @@ Bridj is an attempt to provide a Java to Cpp interop solution similar to JNA (wi
 **JNR**     
 JNR is a comparingly young project that target the same problem. Similarly as JNA or Bridj it does not require native programming. There's not much documentation or reviews at the moment, but JNR is often called promising.
 
-**Project Panama**     
-Project Panama aims to simplify the existing complexity with Java to C interop on JDK level. It is still under development, but Foreign Memory Access and Foreign Linker APIs are already available is openjdk 16.
+**JDK Foreign Function/Memory API Preview (JEP-424)**
+API by which Java programs can interoperate with code and data outside of the Java runtime.
 
 **Pure Java**    
 For comparison, the same problem was implemented with JDK's `java.util.Date`, `java.util.Calendar` and `java.time.LocalDateTime`
 
 ## How to run ##
 
-Make sure that gradle is configured with a JDK 16 (or later) and run
+Make sure that gradle is configured with a JDK 19 and run
 ````
 gradlew clean jmh
 ````
@@ -62,28 +64,28 @@ gradlew clean jmh
 
 **System**:  
 
-Intel Core i5-6500 @ 3.20 GHz / Windows 10 / openjdk-16
+Intel Core i7-10610U CPU @ 1.80GHz / Windows 10 / openjdk-19.0.1
 ```
 Full benchmark (average time, smaller is better)
 
-JmhGetSystemTimeSeconds.jnaDirect           2962.544 ± 191.795  ns/op
-JmhGetSystemTimeSeconds.jna                 2889.632 ± 173.064  ns/op
-JmhGetSystemTimeSeconds.bridj                937.159 ±  59.353  ns/op
-JmhGetSystemTimeSeconds.jnr                  362.979 ±   3.560  ns/op
-JmhGetSystemTimeSeconds.panama               242.100 ±   2.240  ns/op
-JmhGetSystemTimeSeconds.jni_javacpp          216.767 ±   2.239  ns/op
-JmhGetSystemTimeSeconds.java_calendar        173.949 ±   3.707  ns/op
-JmhGetSystemTimeSeconds.java_localdatetime    70.926 ±   0.670  ns/op
-JmhGetSystemTimeSeconds.java_date             63.818 ±   2.434  ns/op
+JmhGetSystemTimeSeconds.jnaDirect           9736.387 ±  852.670  ns/op
+JmhGetSystemTimeSeconds.jna                 8147.110 ± 1369.286  ns/op
+JmhGetSystemTimeSeconds.bridj               1400.272 ±  295.012  ns/op
+JmhGetSystemTimeSeconds.jni_javacpp          537.489 ±   88.068  ns/op
+JmhGetSystemTimeSeconds.jnr                  542.155 ±   53.815  ns/op
+JmhGetSystemTimeSeconds.foreign              306.841 ±   21.148  ns/op
+JmhGetSystemTimeSeconds.java_calendar        219.007 ±   10.413  ns/op
+JmhGetSystemTimeSeconds.java_localdatetime    83.940 ±    7.205  ns/op
+JmhGetSystemTimeSeconds.java_date             69.349 ±    4.600  ns/op
 ```
 
 JNA looks expectedly slow (x13 slower that JNI). JNA direct appears even slower, as probably mapping the struct from C to Java consumes the most of operation's time.
 
-Trending JNR appears faster than outdated Bridj, yet staying behind JNI.
+JNR appears faster than outdated Bridj, yet staying behind JNI.
 
-Panama APIs demonstrate performance comparable to that of JNI. This looks promising as Oracle's further development of Project Panama is based on these APIs. 
+JDK's foreign APIs demonstrate performance twice faster than JNI. This looks much better than 2019 results confirming that the significant performance optimization tool place within JDKs 15-19. 
 
-JNI itself is still noticeably slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8's `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
+Foreign APIs itself are still a little slower than pure Java. Note that the fastest API was `java.util.Date` (with a deprecated but still working `Date.getSeconds`). The JDK8+'s `LocalDateTime` is ~2.4 times faster than Calendar API, but yet a little slower than the old-style `j.u.Date`.
 
 
 Now let's look into performance of the native call only, stripping out the struct allocation and field access:
@@ -91,11 +93,11 @@ Now let's look into performance of the native call only, stripping out the struc
 ````
 Native call only (average time, smaller is better)
 
-JmhCallOnly.jna                             1074.267 ±   8.909  ns/op
-JmhCallOnly.jna_direct                      1146.169 ±  23.575  ns/op
-JmhCallOnly.bridj                            307.207 ±   6.025  ns/op
-JmhCallOnly.jnr                              256.508 ±   3.558  ns/op
-JmhCallOnly.jni_javacpp                       44.727 ±   0.255  ns/op
-JmhCallOnly.panama                            44.323 ±   0.709  ns/op
+JmhCallOnly.jna                             1544.121 ±  158.034  ns/op
+JmhCallOnly.jna_direct                      1452.143 ±   93.194  ns/op
+JmhCallOnly.bridj                            330.285 ±   27.105  ns/op
+JmhCallOnly.jnr                              328.379 ±   55.975  ns/op
+JmhCallOnly.jni_javacpp                       62.075 ±   12.188  ns/op
+JmhCallOnly.foreign                           48.998 ±    2.663  ns/op
 ````
-The order is nearly the same, leaving JNI and Panama the fastest.
+The order is nearly the same, and Panama is a leader.

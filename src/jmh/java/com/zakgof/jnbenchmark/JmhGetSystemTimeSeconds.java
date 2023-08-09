@@ -1,7 +1,12 @@
 package com.zakgof.jnbenchmark;
 
-import java.util.concurrent.TimeUnit;
-
+import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
+import com.zakgof.jnbenchmark.foreign.JdkForeignBenchmark;
+import com.zakgof.jnbenchmark.java.JustJava;
+import com.zakgof.jnbenchmark.jna.JnaBenchmark;
+import com.zakgof.jnbenchmark.jna.JnaDirectBenchmark;
+import com.zakgof.jnbenchmark.jni.JavaCppStock;
+import com.zakgof.jnbenchmark.jnr.JnrBenchmark;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
@@ -13,13 +18,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import com.zakgof.jnbenchmark.bridj.BridjBenchmark;
-import com.zakgof.jnbenchmark.java.JustJava;
-import com.zakgof.jnbenchmark.jna.JnaBenchmark;
-import com.zakgof.jnbenchmark.jna.JnaDirectBenchmark;
-import com.zakgof.jnbenchmark.jni.JavaCppStock;
-import com.zakgof.jnbenchmark.jnr.JnrBenchmark;
-import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
+import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
@@ -28,11 +27,11 @@ import com.zakgof.jnbenchmark.panama.PanamaBenchmark;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class JmhGetSystemTimeSeconds {
 	
-	private PanamaBenchmark panama;
+	private JdkForeignBenchmark foreign;
 
 	@Setup(Level.Trial)
     public void setup() {
-		panama = new PanamaBenchmark();
+		foreign = new JdkForeignBenchmark();
     }
 
 	@Benchmark
@@ -74,15 +73,10 @@ public class JmhGetSystemTimeSeconds {
 	public void bridj() throws InterruptedException {
 		BridjBenchmark.all();
 	}
-	
+
 	@Benchmark
-	public void panama_prelayout() throws InterruptedException {
-		panama.allWithPreLayout();
-	}
-	
-	@Benchmark
-	public void panama() throws InterruptedException {
-		panama.all();
+	public void foreign() throws InterruptedException {
+		foreign.all();
 	}
 
 }

@@ -5,7 +5,7 @@ import com.sun.jna.platform.win32.WinBase;
 
 public class JnaBenchmark {
 
-	private WinBase.SYSTEMTIME preallocatedSystemtime;
+	private final WinBase.SYSTEMTIME preallocatedSystemtime;
 
 	public JnaBenchmark() {
 		preallocatedSystemtime = new WinBase.SYSTEMTIME();

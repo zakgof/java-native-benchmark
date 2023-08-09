@@ -1,25 +1,41 @@
 plugins {
     id 'java'
-    id "me.champeau.gradle.jmh" version "0.4.8"
+    id "me.champeau.jmh" version "0.7.1"
 }
 
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     implementation 'org.bytedeco.javacpp-presets:systems-platform:1.4.4'
-    implementation 'org.openjdk.jmh:jmh-core:1.21'
-    implementation 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
-    implementation 'net.java.dev.jna:jna-platform:5.3.1'
-    implementation 'com.github.jnr:jnr-ffi:2.1.9'
+    implementation 'net.java.dev.jna:jna-platform:5.13.0'
+    implementation 'com.github.jnr:jnr-ffi:2.2.14'
     implementation 'com.nativelibs4java:bridj:0.7.0'
-    implementation files('panama/kernel32.h.jar')
 }
 
 jmh {
-    duplicateClassesStrategy = 'warn'
-    jvmArgs = ['-Djmh.separateClasspathJAR=true']
+    jvmArgs = ['-Djmh.separateClasspathJAR=true', '--enable-preview', '--enable-native-access=ALL-UNNAMED']
+}
+
+// Configure Java compilation tasks to enable feature previews
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("--enable-preview")
+    javaCompiler.set(javaToolchains.compilerFor {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    })
+}
+
+// Then configure the JMH Tasks to build with Java 15
+tasks.withType(me.champeau.jmh.WithJavaToolchain).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    })
+}
+
+// Configure the JMH bytecode generator to support feature previews
+tasks.withType(me.champeau.jmh.JmhBytecodeGeneratorTask).configureEach {
+    jvmArgs.set(["--enable-preview"])
 }
