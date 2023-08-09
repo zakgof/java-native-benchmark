@@ -16,6 +16,7 @@ import static java.lang.foreign.ValueLayout.JAVA_SHORT;
 public class JdkForeignBenchmark {
 
     private static final MemoryLayout SYSTEMTIME = structLayout(
+            JAVA_SHORT.withName("wYear"),
             JAVA_SHORT.withName("wMonth"),
             JAVA_SHORT.withName("wDayOfWeek"),
             JAVA_SHORT.withName("wDay"),

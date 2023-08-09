@@ -68,15 +68,16 @@ Intel Core i7-10610U CPU @ 1.80GHz / Windows 10 / openjdk-19.0.1
 ```
 Full benchmark (average time, smaller is better)
 
-JmhGetSystemTimeSeconds.jnaDirect           9736.387 ±  852.670  ns/op
-JmhGetSystemTimeSeconds.jna                 8147.110 ± 1369.286  ns/op
-JmhGetSystemTimeSeconds.bridj               1400.272 ±  295.012  ns/op
-JmhGetSystemTimeSeconds.jni_javacpp          537.489 ±   88.068  ns/op
-JmhGetSystemTimeSeconds.jnr                  542.155 ±   53.815  ns/op
-JmhGetSystemTimeSeconds.foreign              306.841 ±   21.148  ns/op
-JmhGetSystemTimeSeconds.java_calendar        219.007 ±   10.413  ns/op
-JmhGetSystemTimeSeconds.java_localdatetime    83.940 ±    7.205  ns/op
-JmhGetSystemTimeSeconds.java_date             69.349 ±    4.600  ns/op
+JmhGetSystemTimeSeconds.jnaDirect            4517.766 ± 417.656  ns/op
+JmhGetSystemTimeSeconds.jna                  4037.103 ± 681.270  ns/op
+JmhGetSystemTimeSeconds.bridj                1087.531 ± 122.028  ns/op
+JmhGetSystemTimeSeconds.jnr                   400.896 ±  52.783  ns/op
+JmhGetSystemTimeSeconds.jni_javacpp           259.521 ±   7.964  ns/op
+JmhGetSystemTimeSeconds.foreign               237.920 ±  30.081  ns/op
+JmhGetSystemTimeSeconds.java_calendar         154.341 ±   8.306  ns/op
+JmhGetSystemTimeSeconds.java_localdatetime     85.310 ±  32.671  ns/op
+JmhGetSystemTimeSeconds.java_date              58.209 ±   3.257  ns/op
+
 ```
 
 JNA looks expectedly slow (x13 slower that JNI). JNA direct appears even slower, as probably mapping the struct from C to Java consumes the most of operation's time.
@@ -93,11 +94,11 @@ Now let's look into performance of the native call only, stripping out the struc
 ````
 Native call only (average time, smaller is better)
 
-JmhCallOnly.jna                             1544.121 ±  158.034  ns/op
-JmhCallOnly.jna_direct                      1452.143 ±   93.194  ns/op
-JmhCallOnly.bridj                            330.285 ±   27.105  ns/op
-JmhCallOnly.jnr                              328.379 ±   55.975  ns/op
-JmhCallOnly.jni_javacpp                       62.075 ±   12.188  ns/op
-JmhCallOnly.foreign                           48.998 ±    2.663  ns/op
+JmhCallOnly.jna_direct                       1373.435 ±  70.343  ns/op
+JmhCallOnly.jna                              1346.036 ±  72.239  ns/op
+JmhCallOnly.bridj                             383.992 ±  50.000  ns/op
+JmhCallOnly.jnr                               298.334 ±  48.785  ns/op
+JmhCallOnly.jni_javacpp                        56.605 ±   8.087  ns/op
+JmhCallOnly.foreign                            49.717 ±   6.667  ns/op
 ````
 The order is nearly the same, and Panama is a leader.
